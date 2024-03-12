@@ -1,4 +1,4 @@
-const mongoose = require("monngoose");
+const mongoose = require("mongoose");
 
 const urlSchema = new mongoose.Schema(
    {
@@ -11,9 +11,9 @@ const urlSchema = new mongoose.Schema(
          type: String,
          required: true,
       },
-      visitHisotry: [
+      history: [
          {
-            timestamps: {
+            time: {
                type: Number,
             },
          },
