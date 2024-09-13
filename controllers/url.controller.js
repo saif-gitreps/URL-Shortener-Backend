@@ -4,16 +4,18 @@ const URL = require("../models/url.model");
 const handleGenerateNewShortUrl = async (req, res) => {
    const shortId = shortid();
 
-   if (!req.body.redirectURL) {
+   if (!req.body.url) {
       return res.status(400).json({ message: "redirectURL is required" });
    }
    await URL.create({
       shortId,
-      redirectURL: req.body.redirectURL,
+      redirectURL: req.body.url,
       visitedHistory: [],
    });
 
-   return res.status(201).json({ shortId });
+   return res.render("home", {
+      id: shortId,
+   });
 };
 
 const handleRedirectUrl = async (req, res) => {
@@ -62,8 +64,21 @@ const handleGetAnalytics = async (req, res) => {
    }
 };
 
+const handleGetAllUrls = async (req, res) => {
+   try {
+      const urls = await URL.find();
+      return res.render("home", {
+         urls,
+      });
+   } catch (error) {
+      console.log(error);
+      throw new Error("Error while getting all URLs");
+   }
+};
+
 module.exports = {
    handleGenerateNewShortUrl,
    handleRedirectUrl,
    handleGetAnalytics,
+   handleGetAllUrls,
 };

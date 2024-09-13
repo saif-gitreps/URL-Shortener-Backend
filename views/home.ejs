@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Home</title>
+   </head>
+   <body style="background-color: rgb(40, 40, 40); color: white">
+      <h1>Url Shortener</h1>
+      <form action="/url" method="POST">
+         <input type="text" name="url" placeholder="Enter URL" />
+         <button type="submit">Shorten</button>
+      </form>
+      <% if (locals.id) { %>
+      <p>
+         Newly generated URL:
+         <a href="http://localhost:3000/url/<%= id %>">http://localhost:3000/<%= id %></a>
+      </p>
+      <% } %>
+
+      <h2>Shortened URLs</h2>
+      <!--  Display all shortened URLs -->
+      <% if (locals.urls) { %>
+      <table>
+         <thead style="text-align: left">
+            <tr>
+               <th>S. no</th>
+               <th>Shortened URL</th>
+               <th>Original URL</th>
+               <th>Clicks</th>
+            </tr>
+         </thead>
+         <tbody>
+            <% urls.forEach((url, index) => { %>
+            <tr>
+               <td><%= index + 1 %></td>
+               <td>
+                  <a target="_blank" href="http://localhost:3000/url/<%= url.shortId %>"
+                     ><%= url.shortId %></a
+                  >
+               </td>
+               <td><%= url.redirectURL %></td>
+               <td><%= url.history.length %></td>
+            </tr>
+            <% }); %>
+         </tbody>
+      </table>
+      <% } %>
+   </body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Signup</title>
+   </head>
+   <body style="background-color: rgb(40, 40, 40); color: white">
+      <div
+         style="
+            width: 15rem;
+            margin: 3rem auto 0 auto;
+            border: 1px solid white;
+            padding: 1rem;
+         "
+      >
+         <h1 style="margin-top: 0">Signup</h1>
+         <form
+            action="/user"
+            method="POST"
+            style="display: grid; grid-column: 1; row-gap: 0.5rem; max-width: 15rem"
+         >
+            <input type="text" placeholder="full name" required name="name" />
+            <input type="email" placeholder="email" required name="email" />
+            <input type="password" placeholder="password" required name="password" />
+            <button type="submit">signup</button>
+         </form>
+      </div>
+   </body>
+</html>
