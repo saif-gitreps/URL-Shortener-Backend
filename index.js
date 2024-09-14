@@ -1,8 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const connectDb = require("./database");
 const path = require("path");
 const cookieParser = require("cookie-parser");
-const { protectRoutes } = require("./middlewares/auth");
+const { protectRoutes, checkAuth } = require("./middlewares/auth");
 
 const userRoutes = require("./routes/user.routes");
 const staticRoutes = require("./routes/staticRouter");
@@ -17,7 +18,7 @@ app.use(express.urlencoded({ extended: false }));
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
 
-app.use("/", staticRoutes);
+app.use("/", checkAuth, staticRoutes);
 app.use("/url", protectRoutes, urlRoutes);
 app.use("/user", userRoutes);
 
