@@ -1,12 +1,15 @@
 const router = require("express").Router();
 const urlController = require("../controllers/url.controller");
+const { protectRoute } = require("../middlewares/auth");
 
-router.post("/", urlController.handleGenerateNewShortUrl);
+router.post("/shorten", urlController.handleGenerateNewRandomShortUrl);
+
+router.post("/custom-shorten", protectRoute, urlController.handleGenerateCustomShortUrl);
 
 router.get("/:shortId", urlController.handleRedirectUrl);
 
-router.get("/analytics/:shortId", urlController.handleGetAnalytics);
+router.delete("/:shortId", protectRoute, urlController.handleDeleteUrl);
 
-router.get("/", urlController.handleGetAllUrls);
+router.get("/analytics/:shortId", protectRoute, urlController.handleGetAnalytics);
 
 module.exports = router;

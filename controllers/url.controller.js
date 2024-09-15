@@ -1,7 +1,8 @@
 const shortid = require("shortid");
 const URL = require("../models/url.model");
+const { ObjectId } = require("mongoose").Types;
 
-const handleGenerateNewShortUrl = async (req, res) => {
+const handleGenerateNewRandomShortUrl = async (req, res) => {
    const shortId = shortid();
 
    if (!req.body.url) {
@@ -11,12 +12,10 @@ const handleGenerateNewShortUrl = async (req, res) => {
       shortId,
       redirectURL: req.body.url,
       visitedHistory: [],
-      createdBy: req.user._id,
+      createdBy: req?.user?._id || null,
    });
 
-   return res.render("home", {
-      id: shortId,
-   });
+   res.status(200).json({ shortId });
 };
 
 const handleRedirectUrl = async (req, res) => {
@@ -65,21 +64,47 @@ const handleGetAnalytics = async (req, res) => {
    }
 };
 
-const handleGetAllUrls = async (req, res) => {
-   try {
-      const urls = await URL.find();
-      return res.render("home", {
-         urls,
-      });
-   } catch (error) {
-      console.log(error);
-      throw new Error("Error while getting all URLs");
+const handleGenerateCustomShortUrl = async (req, res) => {
+   const { url, shortId } = req.body;
+
+   if (!url || !shortId) {
+      return res.status(400).json({ message: "URL and shortId are required" });
    }
+
+   const existingUrl = await URL.findOne({ shortId });
+
+   if (existingUrl) return res.status(400).json({ message: "ShortId already exists" });
+
+   await URL.create({
+      shortId,
+      redirectURL: url,
+      visitedHistory: [],
+      createdBy: req.user._id,
+   });
+
+   return res.status(200).json({ shortId });
+};
+
+const handleDeleteUrl = async (req, res) => {
+   const shortId = req.params.shortId;
+
+   if (!shortId) return res.status(400).json({ message: "shortId is required" });
+
+   const url = await URL.findOne({ shortId });
+
+   const userId = req.user._id;
+
+   if (userId != url.createdBy) return res.status(401).json({ message: "Unauthorized" });
+
+   await URL.findOneAndDelete({ shortId });
+
+   return res.status(200).json({ message: "URL deleted successfully" });
 };
 
 module.exports = {
-   handleGenerateNewShortUrl,
+   handleGenerateNewRandomShortUrl,
+   handleGenerateCustomShortUrl,
    handleRedirectUrl,
    handleGetAnalytics,
-   handleGetAllUrls,
+   handleDeleteUrl,
 };

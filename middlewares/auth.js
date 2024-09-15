@@ -1,31 +1,28 @@
 const { getUser } = require("../services/auth");
 
-async function protectRoutes(req, res, next) {
-   const userUid = req.cookies?.uid;
+function protectRoute(req, res, next) {
+   const authorizationToken = req.cookies?.token;
 
-   if (!userUid) {
-      return res.redirect("/login");
-   }
+   req.user = null;
 
-   const user = getUser(userUid);
+   if (!authorizationToken) return res.status(401).json({ message: "Unauthorized" });
 
-   if (!user) {
-      return res.redirect("/login");
-   }
+   const user = getUser(authorizationToken);
 
    req.user = user;
 
-   next();
+   return next();
 }
 
-async function checkAuth(req, res, next) {
-   const userUid = req.cookies?.uid;
+function restrictTo(roles = []) {
+   return function (req, res, next) {
+      if (!req.user) return res.redirect("/login");
 
-   const user = getUser(userUid);
+      if (!roles.includes(req.user.role))
+         return res.end("You do not have permission to access this page.");
 
-   req.user = user;
-
-   next();
+      return next();
+   };
 }
 
-module.exports = { protectRoutes, checkAuth };
+module.exports = { protectRoute, restrictTo };
