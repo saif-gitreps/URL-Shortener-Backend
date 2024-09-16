@@ -14,6 +14,14 @@ function protectRoute(req, res, next) {
    return next();
 }
 
+function addAuthUserDataToReqBody(req, res, next) {
+   const authorizationToken = req.cookies?.token;
+
+   if (authorizationToken) req.user = getUser(authorizationToken);
+
+   return next();
+}
+
 function restrictTo(roles = []) {
    return function (req, res, next) {
       if (!req.user) return res.redirect("/login");
@@ -25,4 +33,4 @@ function restrictTo(roles = []) {
    };
 }
 
-module.exports = { protectRoute, restrictTo };
+module.exports = { protectRoute, restrictTo, addAuthUserDataToReqBody };

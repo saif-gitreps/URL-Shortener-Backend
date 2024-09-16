@@ -6,18 +6,20 @@ const urlSchema = new mongoose.Schema(
          type: String,
          required: true,
          unique: true,
+         index: true,
       },
       redirectURL: {
          type: String,
          required: true,
-      },
-      history: [
-         {
-            time: {
-               type: Number,
+         validate: {
+            validator: function (v) {
+               return /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(
+                  v
+               );
             },
+            message: (props) => `${props.value} is not a valid URL!`,
          },
-      ],
+      },
       createdBy: {
          type: mongoose.Schema.Types.ObjectId,
          ref: "User",
