@@ -1,17 +1,16 @@
 const jwt = require("jsonwebtoken");
 
-function setUser(user) {
+function setAccessToken(user) {
    try {
       return jwt.sign(
          {
             email: user.email,
-            name: user.name,
             _id: user._id,
             role: user.role,
          },
-         process.env.JWT_SECRET,
+         process.env.ACCESS_TOKEN_SECRET,
          {
-            expiresIn: "1h",
+            expiresIn: 60 * 15,
          }
       );
    } catch (error) {
@@ -20,11 +19,19 @@ function setUser(user) {
    }
 }
 
-function getUser(token) {
-   if (!token) return null;
-
+function setRefreshToken(user) {
    try {
-      return jwt.verify(token, process.env.JWT_SECRET);
+      return jwt.sign(
+         {
+            email: user.email,
+            _id: user._id,
+            role: user.role,
+         },
+         process.env.REFRESH_TOKEN_SECRET,
+         {
+            expiresIn: 60 * 60 * 24 * 7,
+         }
+      );
    } catch (error) {
       console.log(error);
       return null;
@@ -32,6 +39,6 @@ function getUser(token) {
 }
 
 module.exports = {
-   setUser,
-   getUser,
+   setAccessToken,
+   setRefreshToken,
 };

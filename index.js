@@ -7,6 +7,7 @@ const helmet = require("helmet");
 
 const userRoutes = require("./routes/user.routes");
 const urlRoutes = require("./routes/url.routes");
+const authRoutes = require("./routes/auth.routes");
 const { addAuthUserDataToReqBody } = require("./middlewares/auth");
 
 const app = express();
@@ -19,25 +20,26 @@ const limiter = rateLimit({
    statusCode: 429,
 });
 
+const helmetContentSecurityPolicy = helmet.contentSecurityPolicy({
+   directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+   },
+});
+
 app.use(limiter);
 app.use(helmet());
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(
-   helmet.contentSecurityPolicy({
-      directives: {
-         defaultSrc: ["'self'"],
-         scriptSrc: ["'self'", "'unsafe-inline'"],
-         styleSrc: ["'self'", "'unsafe-inline'"],
-         imgSrc: ["'self'", "data:", "https:"],
-      },
-   })
-);
+app.use(helmetContentSecurityPolicy);
 
 app.use(addAuthUserDataToReqBody);
 app.use("/api/", urlRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/auth", authRoutes);
 
 const PORT = process.env.PORT || 3000;
 

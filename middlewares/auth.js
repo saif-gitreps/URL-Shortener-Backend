@@ -1,23 +1,61 @@
-const { getUser } = require("../services/auth");
+const jwt = require("jsonwebtoken");
+const rateLimit = require("express-rate-limit");
+const { body } = require("express-validator");
+
+const validateSignup = [
+   body("name")
+      .trim()
+      .isLength({ min: 2 })
+      .withMessage("Name must be at least 2 characters long"),
+   body("email").isEmail().normalizeEmail().withMessage("Must be a valid email address"),
+   body("password")
+      .isLength({ min: 8 })
+      .withMessage("Password must be at least 8 characters long")
+      .matches(/\d/)
+      .withMessage("Password must contain a number")
+      .matches(/[A-Z]/)
+      .withMessage("Password must contain an uppercase letter"),
+];
+
+const validateLogin = [
+   body("email").isEmail().normalizeEmail().withMessage("Must be a valid email address"),
+   body("password").notEmpty().withMessage("Password is required"),
+];
+
+const authLimiter = rateLimit({
+   windowMs: 5 * 60 * 1000,
+   max: 5,
+   message: "Too many login/signup attemps, please try again after 5 minutes",
+   headers: true,
+   statusCode: 429,
+});
 
 function protectRoute(req, res, next) {
-   const authorizationToken = req.cookies?.token;
+   const accessToken = req.cookies?.accessToken;
 
-   req.user = null;
+   if (!accessToken) return res.status(401).json({ message: "Unauthorized" });
 
-   if (!authorizationToken) return res.status(401).json({ message: "Unauthorized" });
+   try {
+      const user = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
 
-   const user = getUser(authorizationToken);
+      req.user = user;
 
-   req.user = user;
+      return next();
+   } catch (error) {
+      if (error instanceof jwt.TokenExpiredError)
+         return res.status(401).json({ message: "Access token expired" });
 
-   return next();
+      return res.status(401).json({ message: "Invalid access token" });
+   }
 }
 
 function addAuthUserDataToReqBody(req, res, next) {
-   const authorizationToken = req.cookies?.token;
+   const accessToken = req.cookies?.accessToken;
 
-   if (authorizationToken) req.user = getUser(authorizationToken);
+   if (accessToken) {
+      const user = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+      req.user = user;
+   }
 
    return next();
 }
@@ -33,4 +71,11 @@ function restrictTo(roles = []) {
    };
 }
 
-module.exports = { protectRoute, restrictTo, addAuthUserDataToReqBody };
+module.exports = {
+   protectRoute,
+   restrictTo,
+   addAuthUserDataToReqBody,
+   authLimiter,
+   validateSignup,
+   validateLogin,
+};
