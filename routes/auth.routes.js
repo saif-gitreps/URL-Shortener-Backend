@@ -19,4 +19,8 @@ router.post("/logout", protectRoute, authControllers.handleUserLogout);
 
 router.post("/refresh-token", protectRoute, authControllers.handleRefreshAccessToken);
 
+router.put("/update", protectRoute, authControllers.handleUpdateUser);
+
+router.get("/current-user", protectRoute, authControllers.handleGetCurrentUser);
+
 module.exports = router;

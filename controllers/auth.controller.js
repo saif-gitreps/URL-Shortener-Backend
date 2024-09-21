@@ -68,7 +68,7 @@ async function handleUserLogin(req, res, next) {
          httpOnly: true,
          secure: process.env.NODE_ENV === "production",
          sameSite: "strict",
-         // path: "/api/auth/refresh-token",
+         path: "/api/auth/refresh-token",
          maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
@@ -105,8 +105,6 @@ async function handleRefreshAccessToken(req, res) {
    try {
       const user = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
 
-      console.log(mongoose.Types.ObjectId.createFromHexString(user._id));
-
       const storedUser = await User.findOne({
          _id: mongoose.Types.ObjectId.createFromHexString(user._id),
          refreshToken,
@@ -134,9 +132,48 @@ async function handleRefreshAccessToken(req, res) {
    }
 }
 
+const handleGetCurrentUser = async (req, res) => {
+   const { _id } = req.user;
+
+   const user = await User.findOne({
+      _id: mongoose.Types.ObjectId.createFromHexString(_id),
+   });
+
+   return res.status(200).json({
+      user: {
+         _id: user._id,
+         name: user.name,
+         email: user.email,
+      },
+   });
+};
+
+const handleUpdateUser = async (req, res) => {
+   const { _id } = req.user;
+   const { name, email, password } = req.body;
+
+   const user = await User.findOne({
+      _id: mongoose.Types.ObjectId.createFromHexString(_id),
+   });
+
+   if (!user) {
+      return res.status(404).json({ message: "User not found" });
+   }
+
+   if (name) user.name = name;
+   if (email) user.email = email;
+   if (password) user.password = await bcrypt.hash(password, 10);
+
+   await user.save();
+
+   return res.status(200).json({ message: "User updated successfully" });
+};
+
 module.exports = {
    handleUserSignup,
    handleUserLogin,
    handleUserLogout,
    handleRefreshAccessToken,
+   handleGetCurrentUser,
+   handleUpdateUser,
 };

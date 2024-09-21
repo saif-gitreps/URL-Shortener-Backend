@@ -4,6 +4,7 @@ const connectDb = require("./database");
 const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
+const cors = require("cors");
 
 const userRoutes = require("./routes/user.routes");
 const urlRoutes = require("./routes/url.routes");
@@ -11,6 +12,13 @@ const authRoutes = require("./routes/auth.routes");
 const { addAuthUserDataToReqBody } = require("./middlewares/auth");
 
 const app = express();
+
+app.use(
+   cors({
+      origin: "http://localhost:5173/",
+      optionsSuccessStatus: 200,
+   })
+);
 
 const limiter = rateLimit({
    windowMs: 15 * 60 * 1000,
