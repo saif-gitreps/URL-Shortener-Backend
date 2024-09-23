@@ -15,12 +15,14 @@ router.post("/signup", validateSignup, authControllers.handleUserSignup);
 
 router.post("/login", validateLogin, authControllers.handleUserLogin);
 
-router.post("/logout", protectRoute, authControllers.handleUserLogout);
+router.post("/refresh-token", authControllers.handleRefreshAccessToken);
 
-router.post("/refresh-token", protectRoute, authControllers.handleRefreshAccessToken);
+router.use(protectRoute);
 
-router.put("/update", protectRoute, authControllers.handleUpdateUser);
+router.post("/logout", authControllers.handleUserLogout);
 
-router.get("/current-user", protectRoute, authControllers.handleGetCurrentUser);
+router.put("/update", authControllers.handleUpdateUser);
+
+router.get("/current-user", authControllers.handleGetCurrentUser);
 
 module.exports = router;

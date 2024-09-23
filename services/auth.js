@@ -14,7 +14,7 @@ function setAccessToken(user) {
          }
       );
    } catch (error) {
-      console.log(error);
+      // console.log(error);
       return null;
    }
 }
@@ -33,7 +33,7 @@ function setRefreshToken(user) {
          }
       );
    } catch (error) {
-      console.log(error);
+      // console.log(error);
       return null;
    }
 }

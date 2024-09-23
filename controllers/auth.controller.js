@@ -12,9 +12,7 @@ async function handleUserSignup(req, res, next) {
       const validationError = validationResult(req);
 
       if (validationError.errors.length)
-         return res
-            .status(400)
-            .json({ validationErrors: validationError.errors.map((error) => error.msg) });
+         return res.status(400).json({ message: `${validationError.errors.join(", ")}` });
 
       const existingUser = await User.findOne({ email });
 
@@ -42,9 +40,7 @@ async function handleUserLogin(req, res, next) {
       const validationError = validationResult(req);
 
       if (validationError.errors.length)
-         return res
-            .status(400)
-            .json({ validationErrors: validationError.errors.map((error) => error.msg) });
+         return res.status(400).json({ message: `${validationError.errors.join(", ")}` });
 
       const user = await User.findOne({ email });
 
@@ -68,7 +64,7 @@ async function handleUserLogin(req, res, next) {
          httpOnly: true,
          secure: process.env.NODE_ENV === "production",
          sameSite: "strict",
-         path: "/api/auth/refresh-token",
+         path: "/api/auth",
          maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
@@ -85,12 +81,26 @@ const handleUserLogout = async (req, res) => {
    if (refreshToken) {
       await User.updateOne(
          { refreshToken: refreshToken },
-         { $unset: { refreshToken: 1 } }
+         {
+            $unset: {
+               refreshToken: 1,
+            },
+         }
       );
    }
 
-   res.clearCookie("accessToken");
-   res.clearCookie("refreshToken");
+   res.clearCookie("accessToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+   });
+
+   res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/api/auth",
+   });
 
    return res.status(200).json({ message: "Logged out successfully" });
 };
@@ -120,7 +130,7 @@ async function handleRefreshAccessToken(req, res) {
          httpOnly: true,
          secure: process.env.NODE_ENV === "production",
          sameSite: "strict",
-         maxAge: 15 * 60 * 1000, // 15 minutes
+         maxAge: 1 * 60 * 1000, // 15 minutes
       });
 
       return res.status(200).json({ message: "Access token refreshed successfully" });
@@ -138,6 +148,8 @@ const handleGetCurrentUser = async (req, res) => {
    const user = await User.findOne({
       _id: mongoose.Types.ObjectId.createFromHexString(_id),
    });
+
+   if (!user) return res.status(404).json({ message: "User not found" });
 
    return res.status(200).json({
       user: {

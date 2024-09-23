@@ -11,11 +11,13 @@ const urlRoutes = require("./routes/url.routes");
 const authRoutes = require("./routes/auth.routes");
 const { addAuthUserDataToReqBody } = require("./middlewares/auth");
 
+// todo , re add the rate limiter
 const app = express();
 
 app.use(
    cors({
-      origin: "http://localhost:5173/",
+      origin: "http://localhost:5173",
+      credentials: true,
       optionsSuccessStatus: 200,
    })
 );
@@ -44,7 +46,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(helmetContentSecurityPolicy);
 
-app.use(addAuthUserDataToReqBody);
+// app.use(addAuthUserDataToReqBody);
 app.use("/api/", urlRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
