@@ -24,7 +24,7 @@ const validateLogin = [
 
 const authLimiter = rateLimit({
    windowMs: 5 * 60 * 1000,
-   max: 5,
+   max: 10,
    message: "Too many login/signup attemps, please try again after 5 minutes",
    headers: true,
    statusCode: 429,
@@ -55,6 +55,8 @@ function addAuthUserDataToReqBody(req, res, next) {
    if (accessToken) {
       const user = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
       req.user = user;
+   } else {
+      req.user = null;
    }
 
    return next();

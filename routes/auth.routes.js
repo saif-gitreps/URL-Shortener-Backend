@@ -9,11 +9,9 @@ const {
 
 const router = express.Router();
 
-router.use(authLimiter);
+router.post("/signup", authLimiter, validateSignup, authControllers.handleUserSignup);
 
-router.post("/signup", validateSignup, authControllers.handleUserSignup);
-
-router.post("/login", validateLogin, authControllers.handleUserLogin);
+router.post("/login", authLimiter, validateLogin, authControllers.handleUserLogin);
 
 router.post("/refresh-token", authControllers.handleRefreshAccessToken);
 

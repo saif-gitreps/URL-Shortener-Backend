@@ -37,7 +37,7 @@ const handleGenerateNewRandomShortUrl = async (req, res, next) => {
          return res.status(400).json({ message: "Invalid redirect URL format" });
       }
 
-      await createUrl(shortId, req.body.url, req.user._id);
+      await createUrl(shortId, req.body.url, req.user?._id);
 
       res.status(200).json({ shortId });
    } catch (error) {

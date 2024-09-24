@@ -46,7 +46,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(helmetContentSecurityPolicy);
 
-// app.use(addAuthUserDataToReqBody);
+app.use(addAuthUserDataToReqBody);
 app.use("/api/", urlRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);

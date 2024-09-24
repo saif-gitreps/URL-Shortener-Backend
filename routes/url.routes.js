@@ -6,8 +6,8 @@ const { body, param } = require("express-validator");
 const validateCustomShortUrl = [
    body("url").isURL().withMessage("Invalid URL"),
    body("shortId")
-      .isLength({ min: 5 })
-      .withMessage("ShortId must be at least 5 characters long"),
+      .isLength({ min: 6 })
+      .withMessage("ShortId must be at least 6 characters long"),
 ];
 
 router.post(
@@ -27,6 +27,7 @@ router.get("/:shortId", urlController.handleRedirectUrl);
 
 router.delete("/:shortId", protectRoute, urlController.handleDeleteUrl);
 
+// Todo: add more features for this Endpoint.
 router.get("/analytics/:shortId", protectRoute, urlController.handleGetAnalytics);
 
 module.exports = router;
