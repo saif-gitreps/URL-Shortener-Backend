@@ -18,16 +18,6 @@ const handleGetAllUrls = async (req, res, next) => {
                localField: "shortId",
                foreignField: "shortId",
                as: "visitDetails",
-               pipeline: [
-                  {
-                     $project: {
-                        userAgent: 1,
-                        location: 1,
-                        referrer: 1,
-                        createdAt: 1,
-                     },
-                  },
-               ],
             },
          },
          {
@@ -37,12 +27,10 @@ const handleGetAllUrls = async (req, res, next) => {
          },
          {
             $project: {
-               _id: 1,
                shortId: 1,
                redirectURL: 1,
                createdBy: 1,
                createdAt: 1,
-               visitDetails: 1,
                visitCount: 1,
             },
          },

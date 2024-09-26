@@ -29,9 +29,9 @@ const handleGenerateNewRandomShortUrl = async (req, res, next) => {
       const validationError = validationResult(req);
 
       if (validationError.errors.length)
-         return res
-            .status(400)
-            .json({ validationErrors: validationError.errors.map((error) => error.msg) });
+         return res.status(400).json({
+            message: `${validationError.errors.map((error) => error.msg).join(", ")}`,
+         });
 
       if (!/^https?:\/\//i.test(req.body.url)) {
          return res.status(400).json({ message: "Invalid redirect URL format" });
@@ -53,9 +53,9 @@ const handleGenerateCustomShortUrl = async (req, res, next) => {
       const validationError = validationResult(req);
 
       if (validationError.errors.length)
-         return res
-            .status(400)
-            .json({ validationErrors: validationError.errors.map((error) => error.msg) });
+         return res.status(400).json({
+            message: `${validationError.errors.map((error) => error.msg).join(", ")}`,
+         });
 
       if (!/^https?:\/\//i.test(req.body.url)) {
          return res.status(400).json({ message: "Invalid redirect URL format" });

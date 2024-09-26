@@ -6,8 +6,8 @@ const { body, param } = require("express-validator");
 const validateCustomShortUrl = [
    body("url").isURL().withMessage("Invalid URL"),
    body("shortId")
-      .isLength({ min: 6 })
-      .withMessage("ShortId must be at least 6 characters long"),
+      .isLength({ max: 6 })
+      .withMessage("ShortId cannot be longer than 6 characters"),
 ];
 
 router.post(

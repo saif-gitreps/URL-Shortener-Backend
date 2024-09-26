@@ -12,7 +12,9 @@ async function handleUserSignup(req, res, next) {
       const validationError = validationResult(req);
 
       if (validationError.errors.length)
-         return res.status(400).json({ message: `${validationError.errors.join(", ")}` });
+         return res.status(400).json({
+            message: `${validationError.errors.map((error) => error.msg).join(", ")}`,
+         });
 
       const existingUser = await User.findOne({ email });
 
@@ -26,7 +28,9 @@ async function handleUserSignup(req, res, next) {
          password: hashedPassword,
       });
 
-      return res.status(201).json({ message: "User created successfully." });
+      return res.status(201).json({
+         message: "User created successfully.",
+      });
    } catch (error) {
       console.error(error);
       next(error);
@@ -40,7 +44,9 @@ async function handleUserLogin(req, res, next) {
       const validationError = validationResult(req);
 
       if (validationError.errors.length)
-         return res.status(400).json({ message: `${validationError.errors.join(", ")}` });
+         return res.status(400).json({
+            message: `${validationError.errors.map((error) => error.msg).join(", ")}`,
+         });
 
       const user = await User.findOne({ email });
 
@@ -68,7 +74,9 @@ async function handleUserLogin(req, res, next) {
          maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      return res.status(200).json({ message: "User logged in successfully." });
+      return res.status(200).json({
+         message: "User logged in successfully.",
+      });
    } catch (error) {
       console.error(error);
       next(error);
@@ -130,7 +138,7 @@ async function handleRefreshAccessToken(req, res) {
          httpOnly: true,
          secure: process.env.NODE_ENV === "production",
          sameSite: "strict",
-         maxAge: 1 * 60 * 1000, // 15 minutes
+         maxAge: 15 * 60 * 1000, // 15 minutes
       });
 
       return res.status(200).json({ message: "Access token refreshed successfully" });
@@ -178,7 +186,10 @@ const handleUpdateUser = async (req, res) => {
 
    await user.save();
 
-   return res.status(200).json({ message: "User updated successfully" });
+   return res.status(200).json({
+      message: "User updated successfully",
+      user: { _id: user._id, name: user.name, email: user.email },
+   });
 };
 
 module.exports = {

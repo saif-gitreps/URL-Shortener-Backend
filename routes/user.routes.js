@@ -4,6 +4,6 @@ const { protectRoute } = require("../middlewares/auth");
 
 const router = express.Router();
 
-router.get("/analytics", protectRoute, userController.handleGetAllUrls);
+router.get("/urls", protectRoute, userController.handleGetAllUrls);
 
 module.exports = router;
