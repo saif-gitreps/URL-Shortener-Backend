@@ -132,7 +132,7 @@ const handleGetAnalytics = async (req, res, next) => {
          return res.status(404).json({ message: "URL not found" });
       }
 
-      const analytics = await VisitDetails.find({ shortId });
+      const analytics = await VisitDetails.find({ shortId }, {});
 
       // TODO: Add different analytics data api, this is a simple click analytics.
       return res.status(200).json({

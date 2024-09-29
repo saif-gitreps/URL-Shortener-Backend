@@ -9,9 +9,10 @@ const cors = require("cors");
 const userRoutes = require("./routes/user.routes");
 const urlRoutes = require("./routes/url.routes");
 const authRoutes = require("./routes/auth.routes");
+const countRequests = require("./middlewares/requestLogger");
 const { addAuthUserDataToReqBody } = require("./middlewares/auth");
+const { handleRedirectUrl } = require("./controllers/url.controller");
 
-// todo , re add the rate limiter
 const app = express();
 
 app.use(
@@ -39,17 +40,19 @@ const helmetContentSecurityPolicy = helmet.contentSecurityPolicy({
    },
 });
 
+app.use(countRequests);
 app.use(limiter);
 app.use(helmet());
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(helmetContentSecurityPolicy);
-
 app.use(addAuthUserDataToReqBody);
-app.use("/api/", urlRoutes);
+
+app.use("/api/url", urlRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
+app.get("/:shortId", handleRedirectUrl);
 
 const PORT = process.env.PORT || 3000;
 

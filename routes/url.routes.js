@@ -16,18 +16,17 @@ router.post(
    urlController.handleGenerateNewRandomShortUrl
 );
 
+router.use(protectRoute);
+
 router.post(
    "/custom-shorten",
-   protectRoute,
    validateCustomShortUrl,
    urlController.handleGenerateCustomShortUrl
 );
 
-router.get("/:shortId", urlController.handleRedirectUrl);
-
-router.delete("/:shortId", protectRoute, urlController.handleDeleteUrl);
+router.delete("/:shortId", urlController.handleDeleteUrl);
 
 // Todo: add more features for this Endpoint.
-router.get("/analytics/:shortId", protectRoute, urlController.handleGetAnalytics);
+router.get("/analytics/:shortId", urlController.handleGetAnalytics);
 
 module.exports = router;
