@@ -96,21 +96,12 @@ const handleRedirectUrl = async (req, res, next) => {
 
       const visitDetails = new VisitDetails({
          shortId,
-         userAgent: {
-            browser: {
-               name: userAgent.browser?.name,
-               version: userAgent.browser?.version,
-            },
-            os: { name: userAgent.os?.name, version: userAgent.os?.version },
-            device: userAgent.device?.type || "desktop",
-            cpu: userAgent.cpu,
-         },
-         location: {
-            country: geo?.country || "Unknown",
-            region: geo?.region || "Unknown",
-            timezone: geo?.timezone || "Unknown",
-            city: geo?.city || "Unknown",
-         },
+         browser: userAgent.browser?.name || "Unknown",
+         os: userAgent.os?.name,
+         device: userAgent.device?.type || "desktop",
+         country: geo?.country,
+         region: geo?.region,
+         city: geo?.city,
          referrer,
       });
 
@@ -123,6 +114,7 @@ const handleRedirectUrl = async (req, res, next) => {
    }
 };
 
+/*
 const handleGetAnalytics = async (req, res, next) => {
    try {
       const shortId = req.params.shortId;
@@ -139,6 +131,48 @@ const handleGetAnalytics = async (req, res, next) => {
          urlClicks: analytics?.length,
          urlData,
       });
+   } catch (error) {
+      console.error(error);
+      next(error);
+   }
+};
+
+*/
+
+const handleGetAnalytics = async (req, res, next) => {
+   try {
+      const shortId = req.params.shortId;
+
+      const analytics = await VisitDetails.aggregate([
+         { $match: { shortId } },
+         {
+            $lookup: {
+               from: "urls",
+               localField: "shortId",
+               foreignField: "shortId",
+               as: "urlData",
+            },
+         },
+         { $unwind: "$urlData" },
+         {
+            $project: {
+               _id: 0, // Exclude the _id field
+               shortId: "$shortId",
+               url: "$urlData.url",
+               createdAt: "$urlData.createdAt",
+               redirectURL: "$urlData.redirectURL",
+               browser: "$browser",
+               os: "$os",
+               device: "$device",
+               country: "$country",
+               region: "$region",
+               city: "$city",
+               referrer: "$referrer",
+            },
+         },
+      ]);
+
+      return res.status(200).json({ analytics });
    } catch (error) {
       console.error(error);
       next(error);

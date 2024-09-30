@@ -25,7 +25,7 @@ app.use(
 
 const limiter = rateLimit({
    windowMs: 15 * 60 * 1000,
-   max: (req, res) => (req.user?.role === "admin" ? 100 : 40),
+   max: (req, res) => (req.user?.role === "admin" ? 100 : 60),
    message: "Too many requests from this IP, please try again after 15 minutes",
    headers: true,
    statusCode: 429,
@@ -49,10 +49,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(helmetContentSecurityPolicy);
 app.use(addAuthUserDataToReqBody);
 
+app.get("/:shortId", handleRedirectUrl);
+
 app.use("/api/url", urlRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
-app.get("/:shortId", handleRedirectUrl);
 
 const PORT = process.env.PORT || 3000;
 

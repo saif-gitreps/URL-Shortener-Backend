@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const urlController = require("../controllers/url.controller");
-const { protectRoute } = require("../middlewares/auth");
+const { protectRoute, verifyCSRFToken } = require("../middlewares/auth");
 const { body, param } = require("express-validator");
 
 const validateCustomShortUrl = [
@@ -20,13 +20,14 @@ router.use(protectRoute);
 
 router.post(
    "/custom-shorten",
+   verifyCSRFToken,
    validateCustomShortUrl,
    urlController.handleGenerateCustomShortUrl
 );
 
-router.delete("/:shortId", urlController.handleDeleteUrl);
+router.delete("/:shortId", verifyCSRFToken, urlController.handleDeleteUrl);
 
 // Todo: add more features for this Endpoint.
-router.get("/analytics/:shortId", urlController.handleGetAnalytics);
+router.get("/:shortId/analytics", urlController.handleGetAnalytics);
 
 module.exports = router;

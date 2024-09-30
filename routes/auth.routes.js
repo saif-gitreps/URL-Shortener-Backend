@@ -5,6 +5,7 @@ const {
    authLimiter,
    validateLogin,
    validateSignup,
+   verifyCSRFToken,
 } = require("../middlewares/auth");
 
 const router = express.Router();
@@ -15,12 +16,16 @@ router.post("/login", authLimiter, validateLogin, authControllers.handleUserLogi
 
 router.post("/refresh-token", authControllers.handleRefreshAccessToken);
 
+router.get("/csrf-token", authControllers.handleCSRFToken);
+
 router.use(protectRoute);
+
+router.get("/current-user", authControllers.handleGetCurrentUser);
+
+router.use(verifyCSRFToken);
 
 router.post("/logout", authControllers.handleUserLogout);
 
 router.put("/update", authControllers.handleUpdateUser);
-
-router.get("/current-user", authControllers.handleGetCurrentUser);
 
 module.exports = router;

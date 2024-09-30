@@ -24,7 +24,7 @@ const validateLogin = [
 
 const authLimiter = rateLimit({
    windowMs: 5 * 60 * 1000,
-   max: 10,
+   max: 15,
    message: "Too many login/signup attemps, please try again after 5 minutes",
    headers: true,
    statusCode: 429,
@@ -73,6 +73,22 @@ function restrictTo(roles = []) {
    };
 }
 
+function verifyCSRFToken(req, res, next) {
+   const csrfFromCookie = req.cookies["XSRF-TOKEN"];
+   const csrfFromHeader = req.headers["x-xsrf-token"];
+
+   // console.dir(req.cookies, { depth: null });
+   // console.dir(req.headers, { depth: null });
+
+   // console.log(csrfFromCookie, csrfFromHeader);
+
+   if (!csrfFromCookie || !csrfFromHeader || csrfFromCookie !== csrfFromHeader) {
+      return res.status(403).json({ message: "Invalid CSRF token" });
+   }
+
+   next();
+}
+
 module.exports = {
    protectRoute,
    restrictTo,
@@ -80,4 +96,5 @@ module.exports = {
    authLimiter,
    validateSignup,
    validateLogin,
+   verifyCSRFToken,
 };

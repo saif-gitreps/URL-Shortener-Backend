@@ -3,6 +3,7 @@ const User = require("../models/user.model");
 const { setAccessToken, setRefreshToken } = require("../services/auth");
 const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 const { default: mongoose } = require("mongoose");
 
 async function handleUserSignup(req, res, next) {
@@ -192,6 +193,19 @@ const handleUpdateUser = async (req, res) => {
    });
 };
 
+const handleCSRFToken = (req, res) => {
+   const csrfToken = crypto.randomBytes(32).toString("hex");
+
+   res.cookie("XSRF-TOKEN", csrfToken, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 3600000,
+   });
+
+   return res.status(200).json({ csrfToken });
+};
+
 module.exports = {
    handleUserSignup,
    handleUserLogin,
@@ -199,4 +213,5 @@ module.exports = {
    handleRefreshAccessToken,
    handleGetCurrentUser,
    handleUpdateUser,
+   handleCSRFToken,
 };
