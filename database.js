@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const url = "mongodb://localhost:27017/url-shortener";
+const url = process.env.MONGO_URI;
 
 async function connectDb() {
    return await mongoose.connect(url);

@@ -62,15 +62,15 @@ async function handleUserLogin(req, res, next) {
 
       res.cookie("accessToken", accessToken, {
          httpOnly: true,
-         secure: process.env.NODE_ENV === "production",
-         sameSite: "strict",
+         secure: true,
+         sameSite: "none",
          maxAge: 15 * 60 * 1000,
       });
 
       res.cookie("refreshToken", refreshToken, {
          httpOnly: true,
-         secure: process.env.NODE_ENV === "production",
-         sameSite: "strict",
+         secure: true,
+         sameSite: "none",
          path: "/api/auth",
          maxAge: 7 * 24 * 60 * 60 * 1000,
       });
@@ -100,14 +100,14 @@ const handleUserLogout = async (req, res) => {
 
    res.clearCookie("accessToken", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
    });
 
    res.clearCookie("refreshToken", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
       path: "/api/auth",
    });
 
@@ -137,8 +137,8 @@ async function handleRefreshAccessToken(req, res) {
 
       res.cookie("accessToken", accessToken, {
          httpOnly: true,
-         secure: process.env.NODE_ENV === "production",
-         sameSite: "strict",
+         secure: true,
+         sameSite: "none",
          maxAge: 15 * 60 * 1000, // 15 minutes
       });
 
@@ -198,8 +198,8 @@ const handleCSRFToken = (req, res) => {
 
    res.cookie("XSRF-TOKEN", csrfToken, {
       httpOnly: false,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
       maxAge: 3600000,
    });
 

@@ -17,11 +17,14 @@ const app = express();
 
 app.use(
    cors({
-      origin: "http://localhost:5173",
+      origin: [process.env.FRONTEND_URL, "http://localhost:5173"],
       credentials: true,
+      origin: true,
       optionsSuccessStatus: 200,
    })
 );
+
+app.set("trust proxy", 1);
 
 const limiter = rateLimit({
    windowMs: 15 * 60 * 1000,
