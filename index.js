@@ -58,7 +58,7 @@ app.use("/api/url", urlRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 app.use((err, req, res, next) => {
    console.error(err.stack);
@@ -68,7 +68,7 @@ app.use((err, req, res, next) => {
 const startServer = async () => {
    try {
       await connectDb();
-      app.listen(PORT, () => {
+      app.listen(port, () => {
          console.log("MongoDb connected and Server is running on port 3000");
       });
    } catch (error) {
