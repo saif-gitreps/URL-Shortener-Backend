@@ -58,7 +58,7 @@ app.use("/api/url", urlRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 
 app.use((err, req, res, next) => {
    console.error(err.stack);
