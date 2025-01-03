@@ -5,29 +5,35 @@ A Node.js application where users can create ShortIds for long URLs without auth
 ## Features
 
 **API Endpoints**
-- **URL:**
-  - Create (Custom and Random), delete, and get analytics.
-- **Auth:**
-  - Sign up, log in, refresh access token, get CSRF token, get current user, log out, and update user details.
+
+-  **URL:**
+   -  Create (Custom and Random), delete, and get analytics.
+-  **Auth:**
+   -  Sign up, log in, refresh access token, get CSRF token, get current user, log out, and update user details.
 
 🔐 **Authentication and Security**
-- Stateless JWT authentication with refresh and access tokens using secure HTTP-only cookies.
-- CSRF protection with the **Double-submit cookie** pattern.
-- Role-based authorization.
+
+-  Stateless JWT authentication with refresh and access tokens using secure HTTP-only cookies.
+-  CSRF protection with the **Double-submit cookie** pattern.
+-  Role-based authorization.
 
 💻 **Tech Stack and Features**
-- Password encryption before storing in the database, with decryption for verification.
-- Using the MVC pattern and separating authentication for microservice-like separation of concerns.
-- **Rate limiters** for authentication routes based on different roles.
-- Route protection from unauthenticated requests.
-- **CSRF protection** for all POST requests.
-- User input, URL, and ShortId validation using **express-validator** and custom sanitization.
-- Custom logger for monitoring requests in the development terminal.
-- Schema built with **Mongoose**, along with **aggregation pipeline** queries.
-- Users can monitor analytics for each click in detail for every ShortId.
+
+-  Password **encryption** before storing in the database, with **decryption** for verification.
+-  Using the **MVC pattern** and separating authentication for microservice-like separation of concerns.
+-  **Rate limiters** for authentication routes based on different roles.
+-  Route protection from unauthenticated requests.
+-  **CSRF protection** for all POST requests.
+-  User input, URL, and ShortId validation using **express-validator** and custom sanitization.
+-  Custom logger for monitoring requests in the development terminal.
+-  **Caching** of actively used ShortIds using **Redis** to reduce database load.
+-  Schema built with **Mongoose**, along with **aggregation pipeline** queries.
+-  **Scheduled cron job** to clean up visit details data for an expired URL.
+-  Users can monitor analytics for each click in detail for every ShortId.
 
 🎁 **Additional Features**
-- 🔄 Highly customizable and extendable, with more features planned for future updates.
+
+-  🔄 Highly customizable and extendable, with more features planned for future updates.
 
 <!---
 your comment goes here

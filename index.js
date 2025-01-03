@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const cors = require("cors");
+// const cron = require("node-cron");
 
 const userRoutes = require("./routes/user.routes");
 const urlRoutes = require("./routes/url.routes");
@@ -12,6 +13,8 @@ const authRoutes = require("./routes/auth.routes");
 const countRequests = require("./middlewares/requestLogger");
 const { addAuthUserDataToReqBody } = require("./middlewares/auth");
 const { handleRedirectUrl } = require("./controllers/url.controller");
+const redisClient = require("./utils/redisClient");
+// const removeVisitDetailsJobHandler = require("./utils/removeVisitDetailJobHandler");
 
 const app = express();
 
@@ -43,6 +46,8 @@ const helmetContentSecurityPolicy = helmet.contentSecurityPolicy({
    },
 });
 
+// Disabled for now
+// cron.schedule("0 0 * * *", removeVisitDetailsJobHandler);
 app.use(countRequests);
 app.use(limiter);
 app.use(helmet());
@@ -68,6 +73,7 @@ app.use((err, req, res, next) => {
 const startServer = async () => {
    try {
       await connectDb();
+      await redisClient.connect();
       app.listen(port, () => {
          console.log("MongoDb connected and Server is running on port 3000");
       });

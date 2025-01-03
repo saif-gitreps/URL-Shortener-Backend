@@ -6,14 +6,25 @@ const sanitizeInput = require("../utils/sanitizeInput");
 require("util").inspect.defaultOptions.depth = null;
 const geoip = require("geoip-lite");
 const { validationResult } = require("express-validator");
+const redisClient = require("../utils/redisClient");
 
 const createUrl = async (shortId, redirectURL, userId) => {
-   return URL.create({
+   const url = {
       shortId,
       redirectURL,
       visitedHistory: [],
       createdBy: userId || null,
-   });
+   };
+
+   if (!userId) {
+      url.expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+   }
+
+   const newUrl = new URL(url);
+
+   await newUrl.save();
+
+   return newUrl;
 };
 
 const handleGenerateNewRandomShortUrl = async (req, res, next) => {
@@ -83,6 +94,14 @@ const handleGenerateCustomShortUrl = async (req, res, next) => {
 const handleRedirectUrl = async (req, res, next) => {
    try {
       const shortId = req.params.shortId;
+
+      const cachedUrl = await redisClient.get(shortId);
+
+      if (cachedUrl) {
+         console.log("Cached URL", cachedUrl);
+         return res.redirect(cachedUrl);
+      }
+
       const url = await URL.findOne({ shortId });
 
       if (!url) {
@@ -106,6 +125,10 @@ const handleRedirectUrl = async (req, res, next) => {
       });
 
       await visitDetails.save();
+
+      await redisClient.set(shortId, url.redirectURL, {
+         EX: 60 * 15, // 15 minutes
+      });
 
       return res.redirect(url.redirectURL);
    } catch (error) {

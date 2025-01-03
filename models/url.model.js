@@ -12,6 +12,10 @@ const urlSchema = new mongoose.Schema(
          type: String,
          required: true,
       },
+      expiresAt: {
+         type: Date,
+         required: false,
+      },
       createdBy: {
          type: mongoose.Schema.Types.ObjectId,
          ref: "User",
@@ -20,6 +24,8 @@ const urlSchema = new mongoose.Schema(
    },
    { timestamps: true }
 );
+
+urlSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 const URL = mongoose.model("URL", urlSchema);
 
